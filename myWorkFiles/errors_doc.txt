@@ -1,0 +1,183 @@
+ERROR(1)
+when trying to Use FPNEW hardware FPU implementation : 
+by  : adding this flag in makefile 
+		VLOG_FLAGS += +define+FPU_FPNEW  # Use FPNEW hardware FPU implementation
+		and comment the other diasbles flags for C++ FPU 
+		# VLOG_FLAGS += +define+EXT_F_DISABLE  # Comment this out
+out_errors :
+		-- Compiling module VX_fpu_fpnew
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(21): (vlog-13006) Could not find the package (fpnew_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(22): (vlog-13006) Could not find the package (cf_math_pkg).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(23): (vlog-13006) Could not find the package (defs_div_sqrt_mvp).  Design read will continue, but expect a cascade of errors after this failure.  Furthermore if you experience a vopt-7 error immediately before this error then please check the package names or the library search paths on the command line.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(59): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(59): (vlog-2900) The localparam 'fpnew_pkg' is declared without a default value.
+		** Error: (vlog-13069) /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(59): near "::": syntax error, unexpected ::, expecting ';' or ','.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(77): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(77): (vlog-13282) 'fpnew_pkg' already declared in this scope.
+		** Error: (vlog-13069) /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(77): near "::": syntax error, unexpected ::, expecting ';' or ','.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(82): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(83): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(84): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(85): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(86): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(97): (vlog-2164) Class or package 'fpnew_pkg' not found.
+		** Error: (vlog-13069) /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(97): near "::": syntax error, unexpected ::.
+		** Error: /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(97): (vlog-13205) Syntax error found in the scope following 'fpnew_pkg'. Is there a missing '::'?
+		-- Compiling module VX_fpu_unit
+		-- Compiling module VX_socket
+		-- Compiling module VX_cluster
+		-- Compiling module Vortex
+		** Error: /home/stev_teto_22/vortex/hw/rtl/Vortex.sv(238): End of source encountered before closing `ifdef region started at /home/stev_teto_22/vortex/hw/rtl/fpu/VX_fpu_fpnew.sv(16).
+		End time: 06:13:27 on Nov 14,2025, Elapsed time: 0:00:02
+		Errors: 18, Warnings: 1, Suppressed Warnings: 8
+		make: *** [Makefile:180: compile_rtl] Error 2
+solution :
+		disable FPU totally and not use HW FPU 
+	
+ERROR(2)	
+error out : the syntax error inside VX_operannds.sv(31) , this macro `UNUSED_SPARAM (ISSUE_ID) defiend in a file 	called "VX_platform.vh" which take a string , but ISSUE_ID is integer , so there is 2 solution :
+		
+	SOLUTION:
+		1) modifying the defination of 'ISSUE_ID' to be {parameter `STRING ISSUE_ID  = "0"} ,  but this macro used in many other files so , we have to change it in all files 
+		2) change the macro defination itself in 'VX_platform.vh' from 
+						{`define UNUSED_SPARAM(x) /* verilator lint_off UNUSED */ \
+                         localparam `STRING __``x = x; \
+                         /* verilator lint_on UNUSED */}
+						 to=> 
+						 {`define UNUSED_SPARAM(x) /* verilator lint_off UNUSED */ \
+                         localparam __``x = x; \
+                         /* verilator lint_on UNUSED */}
+	
+ERROR(3)					 
+errors out : 
+			#    Time: 0 ps  Iteration: 0  Region: /tb_top/load_program_to_rtl File: /home/stev_teto_22/vortex/build32/verification/sim/questa/tb/tb_top.sv Line: 210
+			# ** Warning: (vsim-PLI-3691) Expected a system task, not a system function '$fseek'.
+			#    Time: 0 ps  Iteration: 0  Region: /tb_top/load_program_to_rtl File: /home/stev_teto_22/vortex/build32/verification/sim/questa/tb/tb_top.sv Line: 212
+			# Loading /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so
+			# ** Error (suppressible): (vsim-3197) Load of "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" failed: /home/stev_teto_22/mgc/install.aol/intelFPGA/21.2/questa_sim/questasim/gcc-7.4.0-linux_x86_64/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so).
+			# ** Error (suppressible): (vsim-3748) Failed to load DPI object file "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" while trying to resolve 'simx_init'.
+			# ** Warning: (vsim-3770) Failed to find user specified function 'simx_init' in DPI precompiled library search list "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so ".
+			#    Time: 0 ps  Iteration: 0  Instance: /tb_top File: /home/stev_teto_22/vortex/build32/verification/sim/questa/tb/tb_top.sv
+			# Loading /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so
+			# ** Error (suppressible): (vsim-3197) Load of "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" failed: /home/stev_teto_22/mgc/install.aol/intelFPGA/21.2/questa_sim/questasim/gcc-7.4.0-linux_x86_64/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so).
+			# ** Error (suppressible): (vsim-3748) Failed to load DPI object file "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" while trying to resolve 'simx_load_memory'.
+			# ** Warning: (vsim-3770) Failed to find user specified function 'simx_load_memory' in DPI precompiled library search list "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so ".
+			#    Time: 0 ps  Iteration: 0  Unknown: <UNKNOWN>
+			# Loading /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so
+			# ** Error (suppressible): (vsim-3197) Load of "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" failed: /home/stev_teto_22/mgc/install.aol/intelFPGA/21.2/questa_sim/questasim/gcc-7.4.0-linux_x86_64/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so).
+			# ** Error (suppressible): (vsim-3748) Failed to load DPI object file "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" while trying to resolve 'simx_run'.
+			# ** Warning: (vsim-3770) Failed to find user specified function 'simx_run' in DPI precompiled library search list "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so ".
+			#    Time: 0 ps  Iteration: 0  Instance: /tb_top File: /home/stev_teto_22/vortex/build32/verification/sim/questa/tb/tb_top.sv
+			# Loading /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so
+			# ** Error (suppressible): (vsim-3197) Load of "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" failed: /home/stev_teto_22/mgc/install.aol/intelFPGA/21.2/questa_sim/questasim/gcc-7.4.0-linux_x86_64/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so).
+			# ** Error (suppressible): (vsim-3748) Failed to load DPI object file "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" while trying to resolve 'simx_read_memory'.
+			# ** Warning: (vsim-3770) Failed to find user specified function 'simx_read_memory' in DPI precompiled library search list "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so ".
+			#    Time: 0 ps  Iteration: 0  Instance: /tb_top File: /home/stev_teto_22/vortex/build32/verification/sim/questa/tb/tb_top.sv
+			# Loading /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so
+			# ** Error (suppressible): (vsim-3197) Load of "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" failed: /home/stev_teto_22/mgc/install.aol/intelFPGA/21.2/questa_sim/questasim/gcc-7.4.0-linux_x86_64/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so).
+			# ** Error (suppressible): (vsim-3748) Failed to load DPI object file "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so" while trying to resolve 'simx_cleanup'.
+			# ** Warning: (vsim-3770) Failed to find user specified function 'simx_cleanup' in DPI precompiled library search list "/home/stev_teto_22/vortex/build32/verification/sim/questa/work/simx_dpi.so ".
+			#    Time: 0 ps  Iteration: 0  Instance: /tb_top File: /home/stev_teto_22/vortex/build32/verification/sim/questa/tb/tb_top.sv
+			# Error loading design
+			Error loading design
+			# End time: 06:58:13 on Nov 14,2025, Elapsed time: 0:00:12
+			# Errors: 10, Warnings: 12, Suppressed Errors: 1, Suppressed Warnings: 21
+			make: *** [Makefile:214: sim_vecadd] Error 12
+des_err :
+			this errors related by GCC of Questasim at simulation (vsim)
+solutions : 
+			1) update compile_simx.sh file and old version still exist "compile_simx.sh.original" 
+					cd ~/vortex/build32/verification/sim/questa
+
+					# Backup original
+					cp compile_simx.sh compile_simx.sh.original
+
+					# Create new version
+					cat > compile_simx.sh << 'EOFSCRIPT'
+					#!/bin/bash
+					# Compile SimX with QuestaSim's bundled GCC for compatibility
+
+					WORK_DIR="./work"
+					VORTEX_ROOT="$HOME/vortex"
+					SIMX_DIR="$VORTEX_ROOT/sim/simx"
+					SW_COMMON_DIR="$VORTEX_ROOT/sim/common"
+					THIRD_PARTY_DIR="$VORTEX_ROOT/third_party"
+
+					# Use QuestaSim's GCC instead of system GCC
+					CXX="$QUESTA_HOME/gcc-7.4.0-linux_x86_64/bin/g++"
+					QUESTA_GCC_LIB="$QUESTA_HOME/gcc-7.4.0-linux_x86_64/lib64"
+					QUESTA_INCLUDE="$QUESTA_HOME/include"
+
+					echo "Using QuestaSim GCC: $CXX"
+					$CXX --version | head -1
+
+					# Use C++11 instead of C++17 for GCC 7.4 compatibility
+					CXXFLAGS="-std=c++11 -Wall -Wextra -fPIC"
+					CXXFLAGS="$CXXFLAGS -I$QUESTA_INCLUDE"
+					CXXFLAGS="$CXXFLAGS -I$SIMX_DIR -I$SW_COMMON_DIR -I$VORTEX_ROOT/hw"
+					CXXFLAGS="$CXXFLAGS -I$THIRD_PARTY_DIR/softfloat/source/include"
+					CXXFLAGS="$CXXFLAGS -I$THIRD_PARTY_DIR/ramulator/ext/spdlog/include"
+					CXXFLAGS="$CXXFLAGS -I$THIRD_PARTY_DIR/ramulator/ext/yaml-cpp/include"
+					CXXFLAGS="$CXXFLAGS -I$THIRD_PARTY_DIR/ramulator/src"
+					CXXFLAGS="$CXXFLAGS -DXLEN_32 -DNUM_CORES=2 -DNUM_WARPS=4 -DNUM_THREADS=4"
+
+					mkdir -p $WORK_DIR/simx_objs
+
+					echo "Compiling SimX sources..."
+					$CXX $CXXFLAGS -c $SW_COMMON_DIR/util.cpp -o $WORK_DIR/simx_objs/util.o
+					$CXX $CXXFLAGS -c $SW_COMMON_DIR/mem.cpp -o $WORK_DIR/simx_objs/mem.o
+					$CXX $CXXFLAGS -c $SW_COMMON_DIR/softfloat_ext.cpp -o $WORK_DIR/simx_objs/softfloat_ext.o
+					$CXX $CXXFLAGS -c $SW_COMMON_DIR/rvfloats.cpp -o $WORK_DIR/simx_objs/rvfloats.o
+					$CXX $CXXFLAGS -c $SW_COMMON_DIR/dram_sim.cpp -o $WORK_DIR/simx_objs/dram_sim.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/processor.cpp -o $WORK_DIR/simx_objs/processor.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/cluster.cpp -o $WORK_DIR/simx_objs/cluster.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/socket.cpp -o $WORK_DIR/simx_objs/socket.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/core.cpp -o $WORK_DIR/simx_objs/core.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/emulator.cpp -o $WORK_DIR/simx_objs/emulator.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/decode.cpp -o $WORK_DIR/simx_objs/decode.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/opc_unit.cpp -o $WORK_DIR/simx_objs/opc_unit.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/dispatcher.cpp -o $WORK_DIR/simx_objs/dispatcher.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/execute.cpp -o $WORK_DIR/simx_objs/execute.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/func_unit.cpp -o $WORK_DIR/simx_objs/func_unit.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/cache_sim.cpp -o $WORK_DIR/simx_objs/cache_sim.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/mem_sim.cpp -o $WORK_DIR/simx_objs/mem_sim.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/local_mem.cpp -o $WORK_DIR/simx_objs/local_mem.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/mem_coalescer.cpp -o $WORK_DIR/simx_objs/mem_coalescer.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/dcrs.cpp -o $WORK_DIR/simx_objs/dcrs.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/types.cpp -o $WORK_DIR/simx_objs/types.o
+					$CXX $CXXFLAGS -c $SIMX_DIR/operands.cpp -o $WORK_DIR/simx_objs/operands.o
+
+					echo "Compiling DPI bridge..."
+					$CXX $CXXFLAGS -c ./dpi/simx_dpi.cpp -o $WORK_DIR/simx_objs/simx_dpi.o
+
+					echo "Linking shared library..."
+					$CXX -shared -o $WORK_DIR/simx_dpi.so \
+					$WORK_DIR/simx_objs/*.o \
+					$THIRD_PARTY_DIR/softfloat/build/Linux-x86_64-GCC/softfloat.a \
+					-L$THIRD_PARTY_DIR/ramulator -lramulator \
+					-Wl,-rpath,$THIRD_PARTY_DIR/ramulator \
+					-Wl,-rpath,$QUESTA_GCC_LIB
+
+					echo ""
+					echo "Verifying library..."
+					echo "simx_dpi.so requires these GLIBCXX versions:"
+					strings $WORK_DIR/simx_dpi.so | grep GLIBCXX | sort -u | tail -5
+
+					echo "Done!"
+					EOFSCRIPT
+
+					chmod +x compile_simx.sh
+					
+					# Remove old compiled objects
+					rm -rf work/simx_objs work/simx_dpi.so
+
+					# Compile with QuestaSim's GCC
+					./compile_simx.sh 2>&1 | tee compile_log.txt
+			
+			that produce a ~\vortex\build32\verification\sim\questacompile_log.txt file full of errors .
+			so tha problem still exist 
+			
+			2) compile simx files by using g++ (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0 not questasim gcc-7.4.0 
+			Resulte : PASSED ....
+
+
